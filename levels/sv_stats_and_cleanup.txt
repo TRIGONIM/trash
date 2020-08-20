@@ -1,0 +1,38 @@
+local function getExps(cb)
+	Q([[
+		SELECT `steamid`,`exp`
+		FROM `leveling_system`
+	]],cb)
+end
+
+local function delRecord(sid,cb)
+	Q([[
+		DELETE
+		FROM `leveling_system`
+		WHERE `steamid` = ?
+	]],sid,cb)
+end
+
+
+
+local stat = {}
+getExps(function(d)
+	for _,v in ipairs(d) do
+		local sid,exp = v.steamid,v.exp
+		local lvl = LVL.expToLevel(exp)
+
+		-- if lvl <= 1 then
+		-- 	delRecord(sid)
+		-- end
+
+		-- if lvl > 30 then
+		-- 	LVL.storeXP(sid,46500) -- делаем 30
+		-- end
+
+		stat[lvl] = (stat[lvl] or 0) + 1
+
+		print(sid,exp,lvl)
+	end
+
+	prt(stat)
+end)

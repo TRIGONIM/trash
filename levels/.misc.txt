@@ -1,0 +1,135 @@
+-------------------------------------------------------------------------
+-- ПРИНТ ЦЕН И СУММЫ АПГРЕЙДОВ ЛЕВЕЛОВ
+-----------------------------------------------------------------------------
+-- function PrintLevelsPrices()
+-- 	local sum = 0
+-- 	for i = 1,LVL.max_lvl do
+-- 		local price = LVL.getUpgradePrice(i)
+-- 		sum = sum + price
+
+-- 		print("LVL " .. i .. " price: " .. qq.formatMoney(price))
+-- 	end
+
+-- 	print("TOTAL:" .. qq.formatMoney(sum))
+-- end
+
+-- PrintLevelsPrices()
+-------------------------------------------------------------------------
+
+
+
+--[[-------------------------------------------------------------------------
+НОВАЯ ПЛАНИРОВКА НАЧИСЛЕНИЙ
+-----------------------------------------------------------------------------
+цель - макс лвл за ~2 недели (14д, 336ч, 20160м) беспрерывной игры
+30 лвл (макс) = 46500 EXP
+автоначисление опыта каждые 5 мин
+
+
+Сколько опыта нужно начислять, чтобы за 2 недели беспрерывной игры, он составил половину максимального уровня?
+Половина макс времени = 10080м
+10080/5 = 2016 будет начислений до этого момента
+46500/2016 = ~23 EXP/начисление
+округляем = 20
+--]]
+
+
+
+
+
+--[[-------------------------------------------------------------------------
+ПРОВЕРКА КОЛЛИЗИЙ В БОНУСАХ ЗА УРОВЕНЬ
+-----------------------------------------------------------------------------
+local total_price = 0
+
+local toprint = {}
+for lvl = 1,LVL.max_lvl do
+	local price = LVL.getUpgradePrice(lvl)
+	total_price = total_price + price
+
+	local dat = LVL.BONUSES[lvl] -- нет бонусов за лвл
+	if !dat then
+		toprint[lvl] = false
+		continue
+	end
+
+	local lvlexp    = LVL.lvlToExp(lvl)
+	local need_time = string.sub(timeToStr(lvlexp / LVL.exp_for_playtime * LVL.time_between_exp_increments),0,-6)
+
+
+	local bonuses = {}
+	for i,v in ipairs(dat) do
+		bonuses[i] = v[1]
+	end
+
+	toprint[lvl] = {
+		inf = {
+			time = need_time,
+			-- price = qq.formatMoney(price),
+			total = qq.formatMoney(total_price),
+		},
+		bonuses = bonuses,
+	}
+end
+
+prt(toprint)
+---------------------------------------------------------------------------]]
+
+
+--[[-------------------------------------------------------------------------
+ЗАГОТОВКА СОЗДАНИЯ НОВЫХ БОНУСОВ
+-----------------------------------------------------------------------------
+local NEED_LVL = 1
+hook.Add("LVL.LoadBonuses","",function(ADD)
+	ADD(NEED_LVL,"")
+end)
+
+if SERVER then
+	hook.Add("","LVL",function(pl)
+		if !pl:HasLVL(NEED_LVL,true) then
+			return false
+		end
+	end)
+end
+---------------------------------------------------------------------------]]
+
+
+
+-- -----------------------------------------------------------------
+-- -- Зона дебага
+-- -----------------------------------------------------------------
+-- local curexp = 165100
+
+-- local curlvl,exptolvlup,expcharge = LVL.expToLevel(curexp)
+-- print(string.format(
+-- 	"lvl: %s\ncharge: %s\nneedxp: %s",
+-- 	curlvl,expcharge,exptolvlup
+-- ))
+-- print(curlvl .. " lvltoexp: " .. LVL.lvlToExp(curlvl))
+-- print("Цена апгрейда до след. лвл: " .. LVL.getUpgradePrice(curlvl + 1))
+
+
+
+-- require("xbench")
+-- xbench.Compare({
+-- 	TOLVL100 = function() expToLevel(100) end,
+-- 	TOLVL1000 = function() expToLevel(1000) end,
+-- 	TOLVL10000 = function() expToLevel(10000) end,
+-- 	TOLVL100000 = function() expToLevel(100000) end,
+-- 	TOLVL1000000 = function() expToLevel(1000000) end,
+-- 	TOLVL10000000 = function() expToLevel(10000000) end,
+-- 	TOLVL100000000 = function() expToLevel(100000000) end,
+-- 	TOLVL1000000000 = function() expToLevel(1000000000) end,
+-- },100000)
+
+
+
+
+
+-- -----------------------------------------------------------------
+-- -- Всякие проверки
+-- -----------------------------------------------------------------
+-- LVL.storeXP("STEAM_0:1:55598730",229)
+-- LVL.getOfflineData(function(dat)
+-- 	PrintTable(dat)
+-- end,"STEAM_0:1:55598730")
