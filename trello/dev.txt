@@ -1,0 +1,24 @@
+--[[-------------------------------------------------------------------------
+	Использовал для получения ID карточки по ее имени
+---------------------------------------------------------------------------]]
+TRL.FetchStaffCards(function(cards)
+	for _,CARD in ipairs(cards) do
+		-- CARD:Checklists(prt)
+
+		if CARD:Name() == "Demo (STEAM_0:1:23456789)" then
+			prt(CARD)
+		end
+	end
+end)
+
+--[[-------------------------------------------------------------------------
+	Создание чеклиста в карточке, имея ее ID
+---------------------------------------------------------------------------]]
+local TEST_CARD_ID = ""
+
+TRL.GetCard(TEST_CARD_ID, function(CARD)
+	CARD:NewChecklist("qwerty",nil, function(LIST)
+		prt(LIST)
+	end)
+end)
+
