@@ -1,0 +1,28 @@
+-- Скрипт портирует данные с trigon_scripts/permasents в permaprops БД.
+-- Скрипт пермапропов изменен 30 ноября 2021 для корректного восприятия порта (а именно отсутствия .Model)
+
+local function insertData(map,cont_table, cb)
+	QS("INSERT INTO props_perma (id, map, content) VALUES(NULL,?,?);",map,util.TableToJSON(cont_table), cb)
+end
+
+
+local function foo(dat)
+	return {
+		Class = dat.class,
+		Pos = util.StringToType(dat.data.vec, "Vector"),
+		Angle = util.StringToType(dat.data.ang, "Angle"),
+	}
+end
+
+local files = file.Index("trigon_scripts/permasents_", "DATA")
+
+local parsed = fl.map(files, function(path)
+	local data = util.JSONToTable(file.Read(path))
+	local class,map = path:match("/.-/(.-)/(.-)/%d+%.txt$")
+	return {path = path, class = class, map = map, data = data}
+end)
+
+for _,dat in pairs(parsed) do
+	insertData(game.GetMap(), foo(dat), fp{PRINT, "Added", dat.path})
+end
+
