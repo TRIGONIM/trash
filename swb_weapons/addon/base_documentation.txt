@@ -1,0 +1,138 @@
+This documentation will help you make your own weapons if you want to do that.
+
+The variables you see in the base but don't see on this list are most likely modified on the run, don't change them.
+
+--// Main weapon variables \\--
+SWEP.Primary.ClipSize - integer, weapon's magazine size.
+SWEP.Primary.DefaultClip - integer, amount of ammo to give upon weapon pickup.
+SWEP.Primary.Automatic - boolean, should the weapon fire in full auto?
+SWEP.Primary.Ammo - string, type of ammo the weapon should use.
+SWEP.Suppressable - boolean, if set to true, will allow the player to suppress his weapon by holding his USE KEY and pressing his SECONDARY ATTACK KEY. SHOULD BE USED ONLY ON VIEWMODELS THAT HAVE SUPPRESSOR ATTACHING ANIMATIONS; DEFAULT - false
+SWEP.Chamberable - boolean, if set to true, then the weapon will be chamberable when reloading a non-empty weapon, basically base mag size + 1. (1 round in the chamber, the rest in the magazine); DEFAULT - true
+SWEP.CanPenetrate - boolean, can this weapon penetrate surfaces? DEFINED AS true BY DEFAULT IN swb_base, SET TO false THERE TO DISABLE PENETRATION FOR EVERY WEAPON USING THIS BASE; DEFAULT - true
+SWEP.CanRicochet - boolean, should the weapon's rounds ricochet off surfaces? DEFINED AS true BY DEFAULT IN swb_base, SET TO false THERE TO DISABLE RICOCHET FOR EVERY WEAPON USING THIS BASE; DEFAULT - true
+SWEP.CrosshairEnabled - boolean, self-explanatory; DEFAULT - true
+SWEP.Damage - integer, self-explanatory.
+SWEP.Recoil - float/integer, ditto.
+SWEP.FireDelay - float/integer, delay between each shot, every weapon's fire delay is calculated by this formula: 60 / rate of fire.
+SWEP.Shots - amount of bullets to fire per shot; DEFAULT - 1
+SWEP.FireSound - sound to use when firing a weapon, can be a sound script, or can be a direct file. (sound script preferably)
+SWEP.FireSoundSuppressed - sound to use when firing a suppressed weapon, can be a sound script, or can be a direct file. (sound script preferably)
+SWEP.DeployTime - float/integer, amount of time to delay every weapon action when deploying the weapon; DEFAULT - 1
+SWEP.NoDistance - boolean, if set to true, damage scaling over distance will not be used; DEFAULT - false
+SWEP.SpeedDec - integer, the amount of units/second to slow down the player's run speed by when wielding a weapon
+SWEP.ViewModelMovementScale - float/integer, viewmodel movement to multiply by when walking/running; DEFAULT - 1
+SWEP.PenMod - float/integer, amount to multiply the penetrative ability by when a round is fired.
+SWEP.BulletDiameter - float/integer, used when calculating effective range and penetrative ability, please use caliber values for this.
+SWEP.CaseLength - float/integer, used when calculating effective range and penetrative ability, please use caliber values for this.
+SWEP.AmmoPerShot - integer, amount of ammo to reduce from the weapon's magazine per shot; DEFAULT - 1
+SWEP.DryFire - boolean, if set to true, the weapon will use it's dryfire animation. ATTENTION - ONLY USE ON WEAPONS THAT ACTUALLY HAVE A DRY FIRE ANIMATION. MOST OF THE TIME THESE WEAPONS ARE PISTOLS.
+SWEP.SelectIcon - string, should call surface.GetTextureID on it (surface.GetTextureID("path/to/file"), will use a texture to draw the weapon display icon with, as opposed to font-based icons that CS:S uses.
+To add an icon-based (rather than font-based) kill icon, do something like this: killicon.Add("weapon_class", "path/to/icon", Color(255, 80, 0, 255)) 
+SWEP.CrosshairParts - table, controls which parts of the crosshair can be seen {left = true, right = true, upper = true, lower = true}
+SWEP.PlaybackRate - float/integer, sets the animation playback rate for the primary attack animation when aiming down the sights, with SWEP.FadeCrosshairOnAim set to true, ON THE CLIENT.
+SWEP.PlaybackRateSV - float/integer, sets the animation playback rate for the primary attack animation when aiming down the sights with SWEP.FadeCrosshairOnAim set to true, ON THE SERVER, should not exceed 12.
+SWEP.ForceRunStateVelocity - float/integer, set this value to what should force the weapon's running state when a player's velocity reaches that certain value
+
+SWEP.Sprinting - boolean, controls whether sprinting is enabled; DEFAULT - TRUE
+SWEP.HolsterUnderwater - boolean, controls whether weapons will be holstered when the player goes underwater; DEFAULT - true, setting this to false will allow players to fire underwater
+SWEP.HolsterOnLadder - boolean, controls whether weapons will be holstered when the player goes underwater; DEFAULT - true, setting this to false will allow players to fire on ladders
+
+--// Aiming positions \\--
+SWEP.AimPos, SWEP.AimAng - control the weapon's position when aiming, use SWEP Construction Kit on Workshop to set up aiming positions
+SWEP.SprintPos, SWEP.SprintAng - control the weapon's position when sprinting and having the weapon in safe mode, use SWEP Construction Kit on Workshop to set up sprinting positions
+
+--// View bob \\--
+SWEP.ViewbobEnabled - boolean, if set to true, slight viewbob when walking and running will be applied when wielding a weapon that uses this base; DEFAULT - true
+SWEP.ViewbobIntensity - integer, amount to multiply the viewbob by; DEFAULT - 1
+SWEP.ReloadViewBobEnabled - boolean, if set to true, a slight viewbob will be added when reloading a weapon that uses this base; DEFAULT - true
+
+The reload viewbob depends on the muzzle attachment's angles. Sometimes it's angles are fucked up (compiler's fault), use these values to decrease or increase a certain axis' view movement when reloading.
+SWEP.RVBPitchMod - float/integer, reload viewbob pitch multiplier; DEFAULT - 1
+SWEP.RVBYawMod - float/integer, reload viewbob yaw multiplier; DEFAULT - 1
+SWEP.RVBRollMod - float/integer, reload viewbob roll multiplier; DEFAULT - 1
+	
+--// Fire modes \\--
+SWEP.AddSafeMode - boolean, if set to true, then a "safe" mode will automatically be added to the weapon's firemode table when it's picked up
+SWEP.FireModeDisplayPos - string, can accept the following: "left", "middle" and "right"; DEFAULT - "right"
+SWEP.FireModes - table, the firemodes a weapon has. Available firemodes: 
+auto - full-auto
+semi - semi-auto
+double - double-action, semi auto with different text
+bolt - bolt-action, semi auto with different text
+pump - pump-action, semi auto with different text
+break - break-action, semi auto with different text
+2burst - 2-round burst
+3burst - 3-round burst
+
+If you want to make your own burst firemode, go to shared.lua of swb_base, find FireModeNames and define one there.
+'display' - string, is the text it will display when it is selected.
+'auto' - boolean, determines whether the weapon is full-auto or not, set this to true for burst-fire modes.
+'burstamt' - integer, determines the amount of rounds the burst fire mode can fire before the player has to release his primary attack key, setting this to 0 will make the firemode function like a regular full-auto/semi-auto firemode.
+'buldis' - integer, determines the amount of bullet icons to display on the HUD when the firemode is selected.
+
+--// Models \\--
+SWEP.ViewModel - string, the view model to use, THIS IS A MUST.
+SWEP.WorldModel - string, the traditional world model the weapon will use, THIS IS A MUST.
+SWEP.DrawTraditionalWorldModel - boolean, if set to true, will draw world models traditionally, if set to false, will use the following variables to create and draw world models: (DEFAULT - true)
+SWEP.WM - string, the model it will create and use, IF IT DOES NOT EXIST, IT WILL ATTEMPT TO DRAW A TRADITIONAL WORLD MODEL.
+SWEP.WMPos - vector table, the positions to offset the world model by.
+SWEP.WMAng - vector table, the angles to rotate the world model by.
+
+--// Particle effects and shells \\--
+SWEP.Shell - string, the shell to use when firing, setting this to nil or false will disable custom shells for that certain weapon. Available shells:
+mainshell - a large-caliber shell
+shotshell - a shotgun shell
+smallshell - a small shell, pistol round if you will
+
+SWEP.MuzzleEffect - string, the muzzle effect to use when firing, setting this to nil or false will disable custom muzzle flashes for that certain weapon. Available particle effects bundled with SWB:
+swb_pistol_large
+swb_pistol_med
+swb_pistol_small
+swb_rifle_large
+swb_rifle_med
+swb_rifle_small
+swb_shotgun
+swb_silenced
+swb_silenced_small
+swb_sniper
+
+SWEP.NoSilMuz - boolean, if set to true, no particle effects will be created when a player fires a suppressed weapon
+SWEP.PosBasedMuz - boolean, if set to true, firing particle effects will be position-based rather than attached to the muzzle attachment. Useful in cases of the particle effects "lagging".
+SWEP.NoStockShells - boolean, if set to true, will disable the default source engine shells; DEFAULT - true
+SWEP.NoStockMuzzle - boolean, if set to true, will disable the default source engine muzzle effect; DEFAULT - false
+SWEP.MuzzlePosMod - table, should have 3 values - x, y and z. This table is used to change the muzzle's position when using SWEP.PosBasedMuz.
+
+--// Aiming, scopes and overlays \\--
+SWEP.FadeCrosshairOnAim - boolean, if set false, then the crosshair will not fade out when a player is aiming
+SWEP.DrawBlackBarsOnAim - boolean, whether to draw black bars around the edges of the screen when aiming or not, should be used in conjunction with SWEP.AimOverlay, SWEP.FadeDuringAiming and SWEP.MoveWepAwayWhenAiming.
+SWEP.AimOverlay - texture retrieved with surface.GetTextureID to draw when the player is aiming, ideally should be 1024x1024, or any texture with a size of power of 2 (2048x2048, 1024x1024, 512x512, 256x256, etc)
+SWEP.StretchOverlayToScreen - boolean, if set to true, then the texture defined in SWEP.AimOverlay will be stretched all over the screen. DO NOT USE THIS IN CONJUNCTION WITH SWEP.DrawBlackBarsOnAim
+SWEP.ScaleOverlayToScreenHeight - boolean, if set to true, then the texture will be drawn to fit the screen's height (it's width will be the same as the screen's height). DESIGNED FOR SCOPE TEXTURES THAT SIMULATE A SCOPE THAT DOESN'T BLOCK YOUR ENTIRE VIEW, SHOULD NOT BE USED IN CONJUNCTION WITH SWEP.DrawBlackBarsOnAim.
+SWEP.FadeDuringAiming - boolean, if set to true, then the screen will fade out and fade in when the player starts aiming.
+SWEP.MoveWepAwayWhenAiming - boolean, if set to true, then the weapon will not be seen when the screen finishes fading out.
+SWEP.DelayedZoom - boolean, if set to true, then the view will zoom in when the screen finishes fading out.
+SWEP.SnapZoom - boolean, if set to true, then the zoom will be instant, rather than gradual.
+SWEP.InstantDissapearOnAim - boolean, if set to true, then the viewmodel will instantly dissapear the moment the player starts aiming. SHOULD BE USED IN CONJUNCTION WITH SWEP.ScaleOverlayToScreenHeight WHEN USING A SCOPE TEXTURE THAT DOESN'T BLOCK THE ENTIRE VIEW.
+SWEP.AimBreathingEnabled - boolean, if set to true, then when aiming a slight breathing view effect will be applied to the view.
+SWEP.ZoomAmount - float/integer, amount to decrease FOV by when aiming, higher values means more zoom; DEFAULT - 15
+SWEP.AdjustableZoom - boolean, if set to true, will allow players to adjust their scope zoom levels with their mouse wheel, provided they're bound to 'invprev' and 'invnext'. Requires the following variables to be defined:
+SWEP.MinZoom - float/integer, minimum zoom level, recommend 40.
+SWEP.MaxZoom - float/integer, maximum zoom level, recommend 80.
+
+--// Bullet spread \\--
+SWEP.HipSpread - float, spread to use when the player is firing while not aiming.
+SWEP.AimSpread - float, spread to use when the player is firing while aiming.
+SWEP.VelocitySensitivity - float/integer, multiplier for spread increase from movement.
+SWEP.MaxSpreadInc - float/integer, maximum spread increase from firing for a continuous amount of time.
+SWEP.SpreadPerShot - float/integer, amount of spread to add per shot.
+SWEP.SpreadCooldown - float/integer, amount of time to wait after a shot before decreasing spread back to it's normal amount.
+SWEP.AimMobilitySpreadMod - float/integer, velocity sensitivity to multiply by when aiming down the sights.
+SWEP.BurstCooldownMul - float/integer, multiplier for the primary attack delay when the player releases his primary key after firing several rounds off in burst fire mode; DEFAULT - 1.75
+SWEP.BurstSpreadIncMul - float/integer, multiplier for spread increase per shot when firing in burst mode; DEFAULT - 0.5
+SWEP.BurstRecoilMul - float/integer, multiplier for recoil when firing in burst mode; DEFAULT - 0.85
+SWEP.PreventQuickScoping - boolean, if set to true, then when a player starts aiming, the weapon will have a much higher spread, DESIGNED FOR SCOPED RIFLES
+
+--// Mouse sensitivity \\--
+SWEP.RunMouseSensMod - float/integer, multiplies mouse sensitivity by this value when the player is wielding a SWB weapon while running, 1 = normal sensitivity, 0.5 = 50% sensitivity
+SWEP.OverrideAimMouseSens - float/integer, by default, when a player is aiming, his mouse sensitivity is adjusted by the zoom amount (15 = 0.15%), using this variable will override that, 1 = normal sensitivity, 0.5 = 50% sensitivity
